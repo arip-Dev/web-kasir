@@ -32,17 +32,43 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         die("Connection failed: " . $conn->connect_error);
     }
 
-    // Sanitize user input
-    $user = $conn->real_escape_string($user);
-    $password = $conn->real_escape_string($password);
+// Sanitize user input (not needed if using prepared statements)
+$user = trim($user); // Optional sanitization if needed
+$password = trim($password); // Optional sanitization if needed
 
-    // Hash the password using md5
-    $hashedPassword = md5($password);
+// Hash the password using bcrypt
+$hashedPassword = password_hash($password, PASSWORD_BCRYPT);
 
-    // Retrieve user from the database
-    $query = "SELECT * FROM `login` WHERE `user`='$user' AND `pass`='$hashedPassword'";
-    $result = $conn->query($query);
+// Prepare the SQL statement
+$stmt = $conn->prepare("SELECT * FROM `login` WHERE `user` = ?");
 
+// Bind parameters
+$stmt->bind_param("s", $user);
+
+// Execute the query
+$stmt->execute();
+
+// Get the result
+$result = $stmt->get_result();
+
+// Check if user exists and verify password
+if ($result->num_rows > 0) {
+    $userData = $result->fetch_assoc();
+    
+    if (password_verify($password, $userData['password'])) {
+        // Password is correct, proceed with login
+        echo "Login successful!";
+    } else {
+        // Incorrect password
+        echo "Invalid username or password.";
+    }
+} else {
+    // User not found
+    echo "Invalid username or password.";
+}
+
+// Close the statement
+$stmt->close();
     if ($result->num_rows == 1) {
         // User found, set session variables
         $_SESSION['user'] = $user;
