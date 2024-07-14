@@ -35,21 +35,6 @@ function edit_produk($edit)
     return mysqli_affected_rows($conn);
 }
 
-function edit_kategori($editK)
-{
-    global $conn;
-
-    // ambil data dari form edit kategori
-    $id_kategori = $editK["id_kategori"];
-    $nama_kategori = $editK["nama_kategori"];
-
-
-    $query = "UPDATE kategori SET nama_kategori='$nama_kategori', tanggal_input= NOW() WHERE id_kategori='$id_kategori'";
-    mysqli_query($conn, $query);
-
-    return mysqli_affected_rows($conn);
-}
-
 function add_produk($add_produk)
 {
     global $conn;
@@ -129,6 +114,7 @@ function inputBarangKasir($id_barang, $jumlah, $total)
 
     mysqli_query($conn, $query);
 }
+
 // Fungsi untuk menghitung kembalian
 function hitungKembalian($bayar)
 {
@@ -149,8 +135,6 @@ function hitungKembalian($bayar)
         return "Input pembayaran harus berupa angka.";
     }
 }
-
-
 
 // Fungsi untuk memasukkan data ke tabel nota
 function masukkanDataNota()
