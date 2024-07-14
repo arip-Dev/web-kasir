@@ -6,15 +6,22 @@ $produk = getProduk();
 // Proses input barang ke tabel kasir
 if (isset($_POST['input_barang'])) {
     $id_barang = $_POST['id_barang'];
-    $jumlah = str_replace(["Rp ", ".", ","], "", $_POST['jumlah']);
+    $jumlah = str_replace(["Rp. ", ".", ","], "", $_POST['jumlah']);
     $jumlah = is_numeric($jumlah) ? intval($jumlah) : 0;
 
+    // Validasi id_barang
     $produk_data = getProdukById($id_barang);
-    $harga_jual = $produk_data['harga_jual'];
-    $total = $harga_jual * $jumlah;
+    if ($produk_data) {
+        $harga_jual = $produk_data['harga_jual'];
+        $total = $harga_jual * $jumlah;
 
-    inputBarangKasir($id_barang, $jumlah, $total);
-    
+        inputBarangKasir($id_barang, $jumlah, $total);
+        header("Location: index.php?page=kasir");
+        exit();
+    } else {
+        // Handle error: produk tidak ditemukan
+        echo "Produk tidak ditemukan.";
+    }
 }
 // echo '<script src="dots.js"></script>';
 // Proses pembayaran
@@ -32,25 +39,31 @@ if (isset($_POST['bayar'])) {
                 masukkanDataNota();
                 kurangiStokBarang(); // Kurangi stok barang
                 clearDataKasir(); // Hapus data dari tabel kasir
-                echo "<script>alert('Kembalian: Rp " . number_format($kembalian, 0, ",", ".") . "');</script>";
+                echo "<script>alert('Kembalian: Rp " . number_format($kembalian, 0, ",", ".") . "');
+                window.location.href = 'index.php?page=kasir';</script>";
             } else {
-                echo "<script>alert('Jumlah pembayaran tidak mencukupi.');</script>";
+                echo "<script>alert('Jumlah pembayaran tidak mencukupi.');
+                window.location.href = 'index.php?page=kasir';</script>";
             }
         } else {
             // Jika kembalian bukan angka, tampilkan pesan kesalahan
-            echo "<script>alert('$kembalian');</script>";
+            echo "<script>alert('$kembalian');
+            window.location.href = 'index.php?page=kasir';</script>";
         }
     } else {
-        echo "<script>alert('Input pembayaran harus berupa angka.');</script>";
+        echo "<script>alert('Input pembayaran harus berupa angka.');
+        window.location.href = 'index.php?page=kasir';</script>";
     }
 }
 
 // Proses menghapus data di tabel kasir
 if (isset($_POST["clear"])) {
     clearDataKasir();
-    echo '<script>alert("Data berhasil dihapus");</script>';
+    echo "<script>alert('Data berhasil dihapus');
+    window.location.href = 'index.php?page=kasir';</script>";
 }
-
+$sql = "SELECT * FROM produk";
+$result = $conn->query($sql);
 
 ?>
 
@@ -62,29 +75,41 @@ if (isset($_POST["clear"])) {
                     <h2 class='mb-0'>Kasir</h2>
                 </div>
                 <div class="card-body">
-                    <form method="POST" action="">
-                        <div class="form-outline mb-4">
-                            <label for="id_barang">Nama Barang:</label>
-                            <select name="id_barang" class='form-control'>
-                                <?php foreach ($produk as $row): ?>
-                                    <option value="<?php echo $row['id_barang']; ?>"><?php echo $row['nama_barang']; ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
+                <form method="POST" action="">
+                        <input type="hidden" id="id_barang" name="id_barang">
+                        <div class="form-outline mb-3">
+                            <div class="dropdown">
+                                <label for="myInput" class="form-label">Cari Produk:</label>
+                                <input type="text" class="form-control" placeholder="Search.." id="myInput" onkeyup="filterFunction()" onfocus="showDropdown()" onblur="hideDropdown()">
+                                <div id="myDropdown" class="dropdown-menu" style="max-height: 200px; width: 100%; overflow-y: auto;">
+                                    <?php
+                                    $count = 0;
+                                    if ($result->num_rows > 0) {
+                                        while ($row = $result->fetch_assoc()) {
+                                            if ($count < 10) {
+                                                echo '<a class="dropdown-item" href="#" data-id="' . $row["id_barang"] . '">' . htmlspecialchars($row["nama_barang"]) . '</a>';
+                                                $count++;
+                                            }
+                                        }
+                                    } else {
+                                        echo '<a class="dropdown-item" href="#">No results</a>';
+                                    }
+                                    ?>
+                                </div>
+                            </div>
                         </div>
-                        <div class="form-outline mb-4">
-                            <label for="jumlah">Jumlah:</label>
+                        <div class="form-outline mb-3">
+                            <label for="jumlahInput">Jumlah:</label>
                             <input type="text" name="jumlah" id="jumlahInput" onkeyup="formatRupiah(this)" required class='form-control'>
                         </div>
                         <br>
-                        <input type="submit" name="input_barang" value="Tambahkan ke Kasir"
-                            class="btn btn-primary btn-lg btn-block">
+                        <input type="submit" name="input_barang" value="Tambahkan ke Kasir" class="btn btn-primary btn-lg btn-block">
                     </form>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-12 mb-0">
+        <div class="col-md-max-width mb-0">
             <div class="card mb-">
                 <div class="card-header py-3">
                     <?php $kasir = getDataKasir(); ?>
@@ -126,11 +151,10 @@ if (isset($_POST["clear"])) {
                     </p>
                     <form method="POST" action="" onsubmit="removeFormat(document.getElementById('bayarInput'));">
                         <br><br>
-                        <label for="bayar">Bayar:</label>
-                        <input type="text" name="bayar" id="bayarInput" class="form-control" onkeyup="formatRupiahteks(this)"
-                            placeholder="Rp ">
+                        <label for="bayarInput">Bayar:</label>
+                        <input type="text" name="bayar" id="bayarInput" class="form-control" onkeyup="formatRupiahteks(this)" placeholder="Rp ">
                         <br>
-                        <input type="submit" name="bayar" value="Bayar" class="btn btn-primary btn-sm">
+                        <input type="submit" value="Bayar" class="btn btn-primary btn-sm">
                         <button name="clear" value="Clear" class="btn btn-primary btn-sm">Clear</button>
                     </form>
                 </div>
@@ -152,8 +176,53 @@ function formatRupiahteks(input) {
         rupiah += separator + ribuan.join('.');
     }
     rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
-    input.value = 'Rp ' + rupiah;
+    input.value = 'Rp. ' + rupiah;
 }
+
+document.addEventListener('DOMContentLoaded', (event) => {
+    const dropdownItems = document.querySelectorAll('#myDropdown .dropdown-item');
+    dropdownItems.forEach(item => {
+        item.addEventListener('click', (e) => {
+            e.preventDefault();
+            const idBarang = item.getAttribute('data-id');
+            const namaBarang = item.textContent;
+            document.getElementById('myInput').value = namaBarang;
+            document.getElementById('id_barang').value = idBarang;
+            hideDropdown();
+        });
+    });
+});
+
+function filterFunction() {
+    const input = document.getElementById("myInput");
+    const filter = input.value.toUpperCase();
+    const div = document.getElementById("myDropdown");
+    const a = div.getElementsByTagName("a");
+
+    for (let i = 0; i < a.length; i++) {
+        const txtValue = a[i].textContent || a[i].innerText;
+        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            a[i].style.display = "";
+        } else {
+            a[i].style.display = "none";
+        }
+    }
+
+    const visibleLinks = Array.from(a).some(link => link.style.display === "");
+    div.style.display = visibleLinks ? "block" : "none";
+}
+
+function showDropdown() {
+    const dropdown = document.getElementById("myDropdown");
+    dropdown.style.display = "block";
+}
+
+function hideDropdown() {
+    setTimeout(() => {
+        const dropdown = document.getElementById("myDropdown");
+        dropdown.style.display = "none";
+    }, 200);
+}
+
 </script>
 <script src="dots.js"></script>
-
