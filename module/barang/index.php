@@ -27,25 +27,12 @@
                 <?php if ($result) { ?>
                     <?php while ($row = $result->fetch_assoc()) { ?>
                         <tr>
-
-                            <td>
-                                <?= $row['id_barang'] ?>
-                            </td>
-                            <td>
-                                <?= $row['kode_produk'] ?>
-                            </td>
-                            <td>
-                                <?= $row['nama_barang'] ?>
-                            </td>
-                            <td>
-                                <?= $row['stok'] ?>
-                            </td>
-                            <td>
-                                <?= $row['harga_jual'] ?>
-                            </td>
-                            <td>
-                                <?= $row['harga_beli'] ?>
-                            </td>
+                            <td><?= $row['id_barang']   ?></td>
+                            <td><?= $row['kode_produk'] ?></td>
+                            <td><?= $row['nama_barang'] ?></td>
+                            <td><?= number_format($row['stok'], 0, '', '.')        ?></td>
+                            <td><?= number_format($row['harga_jual'], 0, '', '.') ?></td>
+                            <td><?= number_format($row['harga_beli'], 0, '', '.') ?></td>
                             <td>
                                 <!-- Form untuk tombol Edit -->
                                 <form action="index.php" method="get" style="display:inline;">
@@ -68,3 +55,4 @@
         </table>
     </div>
 </div>
+

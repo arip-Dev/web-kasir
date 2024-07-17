@@ -23,32 +23,33 @@ echo '<script src="dots.js"></script>';
     <div class="table-responsive">
         <table class="table table-striped">
             <h2>Tambah Barang</h2>
-            <form action="" method="POST">
+            <form class="myForm" action="" method="POST">
                 <tr>
                     <td><label for="kode_produk">Kode Produk:</label></td>
-                    <td><input type="int" name="kode_produk" class="form-control "required=""></td>
+                    <td><input type="number" name="kode_produk" class="form-control "required></td>
                 </tr>
                 <tr>
                     <td><label for="nama_barang">Nama Barang:</label></td>
-                    <td><input type="text" name="nama_barang" class="form-control "required=""></td>
+                    <td><input type="text" name="nama_barang" class="form-control "required></td>
                 </tr>
                 <tr>
                     <td><label for="stok">Stok:</label></td>
-                    <td><input type="text" name="stok" onkeyup="formatRupiah(this)" class="form-control "required=""></td>
+                    <td><input type="text" name="stok" class="form-control numberInput"required></td>
                 </tr>
                 <tr>
                     <td><label for="harga_jual">Harga Jual:</label></td>
-                    <td><input type="text" name="harga_jual" onkeyup="formatRupiah(this)" class="form-control "required=""></td>
+                    <td><input type="text" name="harga_jual" class="form-control numberInput"required></td>
                 </tr>
                 <tr>
                     <td><label for="harga_beli">Harga Beli:</label></td>
-                    <td><input type="text" name="harga_beli" onkeyup="formatRupiah(this)" class="form-control "required=""></td>
+                    <td><input type="text" name="harga_beli" class="form-control numberInput"required></td>
                 </tr>
                 <tr>
                     <td></td>
-                    <td><input type="submit" name='submit' value="Update" class="btn btn-primary"></td>
+                    <td><button type="submit" name='submit' class="btn btn-primary">Update</button></td>
                 </tr>
             </form>
         </table>
     </div>
 </div>
+

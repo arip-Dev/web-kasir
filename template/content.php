@@ -36,19 +36,19 @@ echo '<script src="reset.js"></script>';
                         <h6 class="pt-2"><i class="bi bi-basket2-fill mr-2"></i> Stok Barang</h6>
                     </div>
                     <div class="card-body">
-                        <center>
-                            <h1>
-                                <?= $totalStok ?>
-                            </h1>
-                        </center>
-                    </div>
-                    <div class="card-footer">
-                        <a href='index.php?page=barang'>Tabel
-                            Barang </a>
-                    </div>
-                </div>
-                <!--/grey-card -->
+                <center>
+                    <h1>
+                        <?= $totalStok > 0 ? $totalStok : 0 ?>
+                    </h1>
+                </center>
             </div>
+            <div class="card-footer">
+                <a href='index.php?page=barang'>Tabel Barang</a>
+                <button type="button" class="btn btn-danger" onclick="hapusDataProduk()">Hapus Data Produk</button>
+            </div>
+                </div>
+            </div>
+            <!--/grey-card -->
             <div class="col-md-4 mb-3">
                 <div class="card">
                     <div class="card-header bg-primary text-white">
@@ -65,8 +65,8 @@ echo '<script src="reset.js"></script>';
                         <a href='index.php?page=kasir'>Kasir </a>
                     </div>
                 </div>
-                <!--/grey-card -->
             </div>
+            <!--/grey-card -->
             <div class="col-md-4 mb-3">
                 <div class="card">
                     <div class="card-header bg-primary text-white">
@@ -85,8 +85,8 @@ echo '<script src="reset.js"></script>';
                         <button type="button" class="btn btn-danger" onclick="hapusDataNota()">Hapus Data Nota</button>
                     </div>
                 </div>
-                <!--/grey-card -->
             </div>
+            <!--/grey-card -->
         </div>
     <?php } ?>
 </div>
