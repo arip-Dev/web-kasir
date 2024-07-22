@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.1.1
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Jul 14, 2023 at 08:28 AM
--- Server version: 10.4.22-MariaDB
--- PHP Version: 8.1.1
+-- Host: localhost:3306
+-- Generation Time: Jul 22, 2024 at 03:03 PM
+-- Server version: 11.4.2-MariaDB-log
+-- PHP Version: 8.1.10
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -33,7 +33,7 @@ CREATE TABLE `kasir` (
   `jumlah` int(9) NOT NULL,
   `total` int(9) NOT NULL,
   `tgl_input` date NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Triggers `kasir`
@@ -50,55 +50,21 @@ DELIMITER ;
 -- --------------------------------------------------------
 
 --
--- Table structure for table `kategori`
---
-
-CREATE TABLE `kategori` (
-  `id_kategori` char(4) NOT NULL,
-  `nama_kategori` varchar(20) NOT NULL,
-  `tanggal_input` date NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Dumping data for table `kategori`
---
-
-INSERT INTO `kategori` (`id_kategori`, `nama_kategori`, `tanggal_input`) VALUES
-('K001', 'ATK', '2023-06-20'),
-('K002', 'Snack', '2023-05-29'),
-('K003', 'Makanan Berat', '2023-05-29'),
-('K004', 'Minuman', '2023-05-29');
-
---
--- Triggers `kategori`
---
-DELIMITER $$
-CREATE TRIGGER `trg_before_insert_kategori` BEFORE INSERT ON `kategori` FOR EACH ROW BEGIN
-  DECLARE max_id INT(3);
-  SET max_id = (SELECT MAX(CAST(SUBSTRING(`id_kategori`, 2) AS UNSIGNED)) FROM `kategori`);
-  SET NEW.`id_kategori` = CONCAT('K', LPAD(COALESCE(max_id + 1, 1), 3, '0'));
-END
-$$
-DELIMITER ;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `login`
 --
 
 CREATE TABLE `login` (
   `id_login` int(3) NOT NULL,
   `user` varchar(255) NOT NULL,
-  `pass` char(32) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  `password` char(32) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `login`
 --
 
-INSERT INTO `login` (`id_login`, `user`, `pass`) VALUES
-(1, 'admin', '21232f297a57a5a743894a0e4a801fc3');
+INSERT INTO `login` (`id_login`, `user`, `password`) VALUES
+(1, 'admin', 'admin123');
 
 -- --------------------------------------------------------
 
@@ -107,25 +73,25 @@ INSERT INTO `login` (`id_login`, `user`, `pass`) VALUES
 --
 
 CREATE TABLE `nota` (
-  `id_nota` char(4) NOT NULL,
+  `id_nota` int(4) NOT NULL,
   `id_barang` char(4) NOT NULL,
   `jumlah` int(9) NOT NULL,
   `total` int(9) NOT NULL,
   `tgl_input` date NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `nota`
 --
 
 INSERT INTO `nota` (`id_nota`, `id_barang`, `jumlah`, `total`, `tgl_input`) VALUES
-('N001', 'B006', 2, 20000, '2023-06-20'),
-('N002', 'B007', 1, 5000, '2023-06-20'),
-('N003', 'B001', 2, 6000, '2023-06-20'),
-('N004', 'B005', 2, 6000, '2023-07-06'),
-('N005', 'B006', 1, 10000, '2023-07-10'),
-('N006', 'B004', 1, 1000, '2023-07-14'),
-('N007', 'B003', 1, 2000, '2023-07-14');
+(157, 'B001', 2, 10000, '2024-07-17'),
+(158, 'B001', 9, 45000, '2024-07-18'),
+(159, 'B002', 4, 20000, '2024-07-18'),
+(161, 'B001', 2, 24000, '2024-07-18'),
+(162, 'B005', 3, 36000, '2024-07-18'),
+(164, 'B001', 2, 24000, '2024-07-18'),
+(165, 'B005', 3, 36000, '2024-07-18');
 
 --
 -- Triggers `nota`
@@ -147,25 +113,28 @@ DELIMITER ;
 
 CREATE TABLE `produk` (
   `id_barang` char(4) NOT NULL,
-  `id_kategori` char(4) NOT NULL,
+  `kode_produk` int(30) NOT NULL,
   `nama_barang` varchar(20) NOT NULL,
   `stok` int(4) NOT NULL,
   `harga_jual` varchar(9) NOT NULL,
   `harga_beli` varchar(9) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `produk`
 --
 
-INSERT INTO `produk` (`id_barang`, `id_kategori`, `nama_barang`, `stok`, `harga_jual`, `harga_beli`) VALUES
-('B001', 'K001', 'Pensil', 18, '3000', '1500'),
-('B003', 'K002', 'Roti', 19, '2000', '1500'),
-('B004', 'K002', 'Pilus', 20, '1000', '500'),
-('B005', 'K003', 'Mie', 15, '3000', '5000'),
-('B006', 'K003', 'Nasi Kuning', 12, '10000', '8000'),
-('B007', 'K004', 'Air Putih', 19, '5000', '3000'),
-('B008', 'K004', 'Kopi', 12, '3000', '1500');
+INSERT INTO `produk` (`id_barang`, `kode_produk`, `nama_barang`, `stok`, `harga_jual`, `harga_beli`) VALUES
+('B001', 124214, 'banci', 200, '10000', '1000'),
+('B002', 142112, 'kucing', 6, '5000', '2000'),
+('B003', 12421, 'semut', 10, '5000', '2000'),
+('B004', 142141, 'kelinci', 10, '5000', '2000'),
+('B005', 1, 'susu', -1, '12000', '10000'),
+('B006', 9879698, 'ikan lele', 100, '10000', '5000'),
+('B007', 93487, 'susu kambing', 100, '12000', '9900'),
+('B008', 102, 'kelinci', 2000, '10000', '2000'),
+('B009', 210249, 'teh tongji', 2, '1000', '1000'),
+('B010', 568758, 'teh tongji', 12, '10000', '2000');
 
 --
 -- Triggers `produk`
@@ -191,12 +160,6 @@ ALTER TABLE `kasir`
   ADD KEY `id_barang` (`id_barang`);
 
 --
--- Indexes for table `kategori`
---
-ALTER TABLE `kategori`
-  ADD PRIMARY KEY (`id_kategori`);
-
---
 -- Indexes for table `login`
 --
 ALTER TABLE `login`
@@ -213,8 +176,7 @@ ALTER TABLE `nota`
 -- Indexes for table `produk`
 --
 ALTER TABLE `produk`
-  ADD PRIMARY KEY (`id_barang`),
-  ADD KEY `id_kategori` (`id_kategori`);
+  ADD PRIMARY KEY (`id_barang`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -225,6 +187,12 @@ ALTER TABLE `produk`
 --
 ALTER TABLE `login`
   MODIFY `id_login` int(3) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `nota`
+--
+ALTER TABLE `nota`
+  MODIFY `id_nota` int(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=166;
 
 --
 -- Constraints for dumped tables
@@ -241,12 +209,6 @@ ALTER TABLE `kasir`
 --
 ALTER TABLE `nota`
   ADD CONSTRAINT `nota_ibfk_1` FOREIGN KEY (`id_barang`) REFERENCES `produk` (`id_barang`) ON DELETE NO ACTION ON UPDATE CASCADE;
-
---
--- Constraints for table `produk`
---
-ALTER TABLE `produk`
-  ADD CONSTRAINT `produk_ibfk_1` FOREIGN KEY (`id_kategori`) REFERENCES `kategori` (`id_kategori`) ON DELETE NO ACTION ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
