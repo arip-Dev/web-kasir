@@ -68,7 +68,7 @@ if (isset($_POST["clear"])) {
                     <form method="POST" action="">
                         <div class="form-outline mb-4">
                             <label for="id_barang">Nama Barang:</label>
-                            <select id="id_barang" name="id_barang" class="form-control">
+                            <select id="id_barang" name="id_barang" class="form-control" style="width:100%">
                                 <?php 
                                 $data = mysqli_query($conn,"select * from produk");
                                 while($d = mysqli_fetch_array($data)){
